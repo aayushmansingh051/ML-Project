@@ -8,23 +8,27 @@ from dataclasses import dataclass
 from src.exception import CustomException
 from src.logger import logging
 
+# Import transformation classes
+from src.components.data_transformation import DataTransformation
+from src.components.data_transformation import DataTransformationConfig
 
 
+# -------------------------------
 # Configuration class for file paths
-
+# -------------------------------
 @dataclass
 class DataIngestionConfig:
-    # Save the training dataset as a file named train.csv inside the artifacts folder.”   
+    # Path where training dataset will be saved
     train_data_path: str = os.path.join("artifacts", "train.csv")
-    # Path where testing data will be saved
+    # Path where testing dataset will be saved
     test_data_path: str = os.path.join("artifacts", "test.csv")
     # Path where raw dataset will be saved
     raw_data_path: str = os.path.join("artifacts", "data.csv")
 
 
-
+# -------------------------------
 # Data Ingestion class
-
+# -------------------------------
 class DataIngestion:
     def __init__(self):
         # Initialize configuration object
@@ -32,11 +36,11 @@ class DataIngestion:
 
     def initiate_data_ingestion(self):
         """
-        This method:
-        1. Reads the raw dataset
-        2. Saves the raw dataset into artifacts folder
-        3. Splits the dataset into train and test sets
-        4. Saves train and test sets into artifacts folder
+        Steps:
+        1. Read the raw dataset
+        2. Save the raw dataset into artifacts folder
+        3. Split the dataset into train and test sets
+        4. Save train and test sets into artifacts folder
         """
         logging.info("Entered the data ingestion method/component")
         try:
@@ -77,5 +81,10 @@ class DataIngestion:
 if __name__ == "__main__":
     # Create DataIngestion object
     obj = DataIngestion()
+
     # Run ingestion process
-    obj.initiate_data_ingestion()
+    train_data, test_data = obj.initiate_data_ingestion()
+
+    # Initialize DataTransformation and run preprocessing
+    data_transformation = DataTransformation()
+    data_transformation.initiate_data_transformation(train_data, test_data)
