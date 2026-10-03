@@ -1,4 +1,3 @@
-# Import required libraries
 import os
 import sys
 import pandas as pd
@@ -10,9 +9,9 @@ from src.exception import CustomException
 from src.logger import logging
 
 
-# -------------------------------
+
 # Configuration class for file paths
-# -------------------------------
+
 @dataclass
 class DataIngestionConfig:
     # Save the training dataset as a file named train.csv inside the artifacts folder.”   
@@ -23,9 +22,9 @@ class DataIngestionConfig:
     raw_data_path: str = os.path.join("artifacts", "data.csv")
 
 
-# -------------------------------
+
 # Data Ingestion class
-# -------------------------------
+
 class DataIngestion:
     def __init__(self):
         # Initialize configuration object
