@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#2563eb">
+<title>ScoreIQ — Student Performance Predictor</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --blue: #2563eb;
+    --blue-dark: #1d4ed8;
+    --blue-soft: #eff4ff;
+    --navy: #0f1d3d;
+    --bg: #f5f7fb;
+    --card: #fff;
+    --line: #e1e7f0;
+    --text: #17213a;
+    --muted: #64708a;
+    --font: "Inter", "Segoe UI", Arial, sans-serif;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; font-family: var(--font); background: var(--bg); color: var(--text); line-height: 1.5; }
+
+  .nav {
+    background: var(--card); border-bottom: 1px solid var(--line);
+    padding: 14px 32px; display: flex; align-items: center; justify-content: space-between;
+  }
+  .brand { display: flex; align-items: center; gap: 10px; font-weight: 800; font-size: 1.15rem; color: var(--navy); }
+  .logo { width: 32px; height: 32px; border-radius: 8px; background: var(--blue); color: #fff;
+          display: grid; place-items: center; font-weight: 800; font-size: .95rem; }
+  .badge { font-size: .8rem; font-weight: 600; color: var(--blue); background: var(--blue-soft);
+           padding: 6px 12px; border-radius: 999px; }
+
+  .hero { background: var(--navy); color: #fff; padding: 56px 32px 96px; text-align: center; }
+  .hero h1 { margin: 0 auto 14px; max-width: 720px; font-size: clamp(1.9rem, 4vw, 3rem); line-height: 1.15; font-weight: 800; }
+  .hero p { margin: 0 auto; max-width: 620px; color: #b7c4e0; font-size: 1.05rem; }
+  .chips { margin-top: 24px; display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
+  .chips span { font-size: .85rem; padding: 6px 14px; border-radius: 999px;
+                background: rgba(255,255,255,.1); border: 1px solid rgba(255,255,255,.18); color: #dbe5fb; }
+
+  .wrap { max-width: 1120px; margin: -56px auto 56px; padding: 0 20px;
+          display: grid; grid-template-columns: 7fr 5fr; gap: 24px; align-items: start; }
+  .card { background: var(--card); border: 1px solid var(--line); border-radius: 16px;
+          padding: 28px; box-shadow: 0 8px 28px rgba(15,29,61,.08); }
+  .card h2 { margin: 0 0 4px; font-size: 1.25rem; }
+  .sub { margin: 0 0 22px; color: var(--muted); font-size: .92rem; }
+
+  .section { margin: 22px 0 12px; font-size: .95rem; font-weight: 700; color: var(--navy);
+             padding-bottom: 8px; border-bottom: 1px solid var(--line); }
+  .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .full { grid-column: 1 / -1; }
+  label { display: block; font-size: .85rem; font-weight: 600; margin-bottom: 6px; }
+  select, input[type=number] {
+    width: 100%; font: inherit; color: var(--text); background: #fff;
+    border: 1px solid #cdd6e4; border-radius: 10px; padding: 11px 12px;
+    transition: border-color .15s, box-shadow .15s;
+  }
+  select:invalid { color: #8591a8; }
+  select:focus, input:focus, button:focus-visible, input[type=range]:focus-visible {
+    outline: none; border-color: var(--blue); box-shadow: 0 0 0 3px rgba(37,99,235,.22);
+  }
+  .score-row { display: flex; align-items: center; gap: 12px; }
+  .score-row input[type=range] { flex: 1; accent-color: var(--blue); }
+  .score-row input[type=number] { width: 84px; text-align: center; }
+
+  .btn { width: 100%; margin-top: 26px; padding: 14px; font: inherit; font-weight: 700; font-size: 1rem;
+         color: #fff; background: var(--blue); border: 0; border-radius: 10px; cursor: pointer; transition: background .15s; }
+  .btn:hover { background: var(--blue-dark); }
+
+  .result { text-align: center; position: sticky; top: 20px; }
+  .gauge { position: relative; width: 220px; height: 220px; margin: 8px auto 18px; }
+  .gauge svg { transform: rotate(-90deg); }
+  .gauge .track { stroke: #e7edf8; }
+  .gauge .bar { stroke: var(--blue); stroke-linecap: round; transition: stroke-dashoffset 1s ease-out; }
+  .gauge .num { position: absolute; inset: 0; display: grid; place-content: center; }
+  .gauge .num b { font-size: 3rem; font-weight: 800; color: var(--navy); line-height: 1; }
+  .gauge .num small { color: var(--muted); font-size: .85rem; margin-top: 4px; }
+  .band { display: inline-block; padding: 6px 16px; border-radius: 999px; font-weight: 700; font-size: .9rem;
+          background: var(--blue-soft); color: var(--blue-dark); }
+  .note { margin: 16px 0 0; font-size: .85rem; color: var(--muted); }
+  .empty { padding: 28px 8px; color: var(--muted); }
+  .empty .ico { width: 56px; height: 56px; margin: 0 auto 14px; border-radius: 14px; background: var(--blue-soft);
+                color: var(--blue); display: grid; place-items: center; font-size: 1.6rem; font-weight: 800; }
+
+  footer { text-align: center; color: var(--muted); font-size: .82rem; padding: 0 20px 36px; }
+
+  @media (max-width: 900px) {
+    .wrap { grid-template-columns: 1fr; }
+    .result { position: static; }
+    .grid { grid-template-columns: 1fr; }
+    .nav { padding: 12px 18px; }
+    .hero { padding: 40px 20px 88px; }
+  }
+  @media (prefers-reduced-motion: reduce) { .gauge .bar { transition: none; } }
+</style>
+</head>
+<body>
+
+<header class="nav">
+  <div class="brand"><div class="logo">IQ</div>ScoreIQ</div>
+  <span class="badge">ML-powered</span>
+</header>
+
+<section class="hero">
+  <h1>Predict a student's maths score in seconds</h1>
+  <p>See how gender, ethnicity, parental education, lunch type, test preparation and other exam scores influence performance, using a trained machine learning model.</p>
+  <div class="chips">
+    <span>Instant estimate</span><span>7 input factors</span><span>Trained on student data</span>
+  </div>
+</section>
+
+<div class="wrap">
+
+  <form class="card" action="{{ url_for('predict_datapoint') }}" method="post">
+    <h2>Student profile</h2>
+    <p class="sub">Fill in every field to get a prediction.</p>
+
+    <div class="section" style="margin-top:0">Background</div>
+    <div class="grid">
+      <div>
+        <label for="gender">Gender</label>
+        <select id="gender" name="gender" required>
+          <option value="" selected disabled>Select gender</option>
+          <option value="male">Male</option>
+          <option value="female">Female</option>
+        </select>
+      </div>
+      <div>
+        <label for="ethnicity">Race or ethnicity</label>
+        <select id="ethnicity" name="ethnicity" required>
+          <option value="" selected disabled>Select group</option>
+          <option value="group A">Group A</option>
+          <option value="group B">Group B</option>
+          <option value="group C">Group C</option>
+          <option value="group D">Group D</option>
+          <option value="group E">Group E</option>
+        </select>
+      </div>
+      <div class="full">
+        <label for="parental_level_of_education">Parental level of education</label>
+        <select id="parental_level_of_education" name="parental_level_of_education" required>
+          <option value="" selected disabled>Select education level</option>
+          <option value="associate's degree">Associate's degree</option>
+          <option value="bachelor's degree">Bachelor's degree</option>
+          <option value="high school">High school</option>
+          <option value="master's degree">Master's degree</option>
+          <option value="some college">Some college</option>
+          <option value="some high school">Some high school</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="section">Study factors</div>
+    <div class="grid">
+      <div>
+        <label for="lunch">Lunch type</label>
+        <select id="lunch" name="lunch" required>
+          <option value="" selected disabled>Select lunch type</option>
+          <option value="free/reduced">Free/reduced</option>
+          <option value="standard">Standard</option>
+        </select>
+      </div>
+      <div>
+        <label for="test_preparation_course">Test preparation course</label>
+        <select id="test_preparation_course" name="test_preparation_course" required>
+          <option value="" selected disabled>Select status</option>
+          <option value="none">None</option>
+          <option value="completed">Completed</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="section">Exam scores</div>
+    <div class="grid">
+      <div>
+        <label for="reading_score">Reading score</label>
+        <div class="score-row">
+          <input type="range" min="0" max="100" value="50" data-sync="reading_score" aria-label="Reading score slider">
+          <input id="reading_score" type="number" name="reading_score" min="0" max="100" value="50" required>
+        </div>
+      </div>
+      <div>
+        <label for="writing_score">Writing score</label>
+        <div class="score-row">
+          <input type="range" min="0" max="100" value="50" data-sync="writing_score" aria-label="Writing score slider">
+          <input id="writing_score" type="number" name="writing_score" min="0" max="100" value="50" required>
+        </div>
+      </div>
+    </div>
+
+    <button class="btn" type="submit">Predict maths score</button>
+  </form>
+
+  <aside class="card result" aria-live="polite">
+    <h2>Prediction</h2>
+    {% if results is defined and results is not none and results != '' %}
+      <p class="sub">Estimated maths score</p>
+      <div class="gauge" id="gauge" data-score="{{ results|float|round(1) }}">
+        <svg width="220" height="220" viewBox="0 0 220 220">
+          <circle class="track" cx="110" cy="110" r="94" fill="none" stroke-width="16"/>
+          <circle class="bar" id="bar" cx="110" cy="110" r="94" fill="none" stroke-width="16"
+                  stroke-dasharray="590.6" stroke-dashoffset="590.6"/>
+        </svg>
+        <div class="num"><b>{{ results|float|round(1) }}</b><small>out of 100</small></div>
+      </div>
+      <span class="band" id="band">Estimate</span>
+      <p class="note">This is a model estimate based on the details you entered, not a guaranteed result.</p>
+    {% else %}
+      <div class="empty">
+        <div class="ico">?</div>
+        <p style="margin:0">Your predicted maths score will appear here after you submit the form.</p>
+      </div>
+    {% endif %}
+  </aside>
+
+</div>
+
+<footer>Student Exam Performance Indicator · Built with Flask and scikit-learn</footer>
+
+<script>
+  // Keep each slider and number box in sync
+  document.querySelectorAll('input[type=range][data-sync]').forEach(function (range) {
+    var box = document.getElementById(range.dataset.sync);
+    range.addEventListener('input', function () { box.value = range.value; });
+    box.addEventListener('input', function () {
+      var v = Math.max(0, Math.min(100, Number(box.value) || 0));
+      range.value = v;
+    });
+  });
+
+  // Animate the result gauge and label the score band
+  var gauge = document.getElementById('gauge');
+  if (gauge) {
+    var score = Math.max(0, Math.min(100, parseFloat(gauge.dataset.score) || 0));
+    var circ = 590.6;
+    requestAnimationFrame(function () {
+      document.getElementById('bar').style.strokeDashoffset = circ * (1 - score / 100);
+    });
+    var label = score >= 85 ? 'Excellent' : score >= 70 ? 'Good' : score >= 50 ? 'Average' : 'Needs support';
+    document.getElementById('band').textContent = label;
+  }
+</script>
+</body>
+</html>
