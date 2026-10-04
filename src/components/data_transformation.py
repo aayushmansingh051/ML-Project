@@ -14,8 +14,7 @@ from src.exception import CustomException   # corrected: class name should be ca
 from src.logger import logging
 import os
 
-from src.utlis import save_object   # ⚠️ check spelling: should be utils.py not utlis.py
-
+from src.utils import save_object   
 
 # -------------------------------
 # Configuration class
@@ -57,6 +56,8 @@ class DataTransformation:
 
             # Numerical pipeline: median imputation avoids distortion from outliers,
             # scaling ensures all features are on comparable ranges.
+            # an imputer is the step that replaces missing values with a sensible default (mean, median, mode, or constant)
+            #  so your model can train without errors.
             num_pipeline = Pipeline(steps=[
                 ("imputer", SimpleImputer(strategy="median")),
                 ("scaler", StandardScaler())
@@ -104,6 +105,17 @@ class DataTransformation:
             logging.info("Obtaining preprocessing object")
 
             # Build preprocessing pipelines
+            
+#          ✅ Common Preprocessing Steps
+#Imputation → Fill missing values (mean, median, most frequent, or constant).
+
+#Scaling → Standardize numerical features so they’re on the same range.
+
+#Encoding → Convert categorical variables into numbers (e.g., one‑hot encoding).
+
+#Feature selection/extraction → Keep only useful features or create new ones.
+
+#Splitting → Divide data into train/test sets for evaluation.
             preprocessing_obj = self.get_data_transformer_object()
 
             # Target column is what we want to predict
@@ -133,7 +145,7 @@ class DataTransformation:
             # Save the fitted preprocessor object for later use (e.g. during prediction)
             save_object(
                 file_path=self.data_transformation_config.preprocessor_obj_file_path,
-                obj=preprocessing_obj   # corrected typo
+                obj=preprocessing_obj   
             )
 
             return (

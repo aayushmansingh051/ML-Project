@@ -12,6 +12,10 @@ from src.logger import logging
 from src.components.data_transformation import DataTransformation
 from src.components.data_transformation import DataTransformationConfig
 
+# Import Trainer classes
+from src.components.model_trainer import ModelTrainerConfig
+from src.components.model_trainer import ModelTrainer
+
 
 # -------------------------------
 # Configuration class for file paths
@@ -45,20 +49,25 @@ class DataIngestion:
         logging.info("Entered the data ingestion method/component")
         try:
             # Step 1: Read raw dataset from notebook/data/stud.csv
+            # Concept: This is the raw input file containing student data
             df = pd.read_csv("notebook/data/stud.csv")
             logging.info("Read the dataset as DataFrame")
 
             # Step 2: Create artifacts folder if it does not exist
+            # Concept: Ensures a safe place to store processed files
             os.makedirs(os.path.dirname(self.ingestion_config.train_data_path), exist_ok=True)
 
             # Step 3: Save raw dataset into artifacts/data.csv
+            # Concept: Keep a copy of the original dataset for reference
             df.to_csv(self.ingestion_config.raw_data_path, index=False, header=True)
 
             # Step 4: Perform train-test split (80% train, 20% test)
+            # Concept: Splitting ensures we can train on one set and evaluate on another
             logging.info("Train-test split initiated")
             train_set, test_set = train_test_split(df, test_size=0.2, random_state=42)
 
             # Step 5: Save train and test datasets into artifacts folder
+            # Concept: These files will be used later by the transformation and trainer
             train_set.to_csv(self.ingestion_config.train_data_path, index=False, header=True)
             test_set.to_csv(self.ingestion_config.test_data_path, index=False, header=True)
 
@@ -86,5 +95,12 @@ if __name__ == "__main__":
     train_data, test_data = obj.initiate_data_ingestion()
 
     # Initialize DataTransformation and run preprocessing
+    # Concept: This step cleans, encodes, and scales the data so the model can use it
     data_transformation = DataTransformation()
-    data_transformation.initiate_data_transformation(train_data, test_data)
+    train_arr, test_arr, _ = data_transformation.initiate_data_transformation(train_data, test_data)
+
+    # Create an instance of ModelTrainer class
+    # Call the training method with train/test arrays and print the result
+    # so after print it is going to give me r2 score
+    model_trainer = ModelTrainer()
+    print(model_trainer.initiate_model_trainer(train_arr, test_arr))
