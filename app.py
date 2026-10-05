@@ -14,7 +14,7 @@ app=application
 #  It’s how Flask serves web pages to the browser.
 @app.route('/')
 def index():
-    return render_template('index.html') 
+    return render_template('home.html') 
 
 @app.route('/predictdata',methods=['GET','POST'])
 def predict_datapoint():
